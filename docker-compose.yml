@@ -1,0 +1,34 @@
+version: "3.9"
+
+x-logging: &default-logging
+  driver: loki
+  options:
+    loki-url: "http://127.0.0.1:3100/loki/api/v1/push"
+
+networks:
+  web:
+    external: true
+  internal:
+    external: true
+  default:
+    external: true
+    name: internal
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      # - "67:67/udp"
+      - "9380:80/tcp"
+    environment:
+      TZ: "Europe/Madrid"
+    volumes:
+      - "/disk/etc/pihole/:/etc/pihole/"
+      - "/disk/etc/dnsmasq.d/:/etc/dnsmasq.d/"
+    cap_add:
+      - NET_ADMIN
