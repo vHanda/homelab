@@ -35,3 +35,15 @@ services:
       - CAP_SYS_NICE
       - CAP_IPC_LOCK
       - CAP_CHOWN
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - 1883:1883
+      - 9001:9001
+    volumes:
+      -  ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - "/disk/mosquitto/data/:/mosquitto/data"
+      - "/disk/mosquitto/log/:/mosquitto/log"
