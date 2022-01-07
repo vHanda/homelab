@@ -47,3 +47,18 @@ services:
       -  ./mosquitto.conf:/mosquitto/config/mosquitto.conf
       - "/disk/mosquitto/data/:/mosquitto/data"
       - "/disk/mosquitto/log/:/mosquitto/log"
+
+  # Torrent Search Engine
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - /disk/jackett/config:/config
+      - /disk/jackett/data:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
