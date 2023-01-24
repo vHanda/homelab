@@ -15,27 +15,6 @@ networks:
     name: internal
 
 services:
-  pihole:
-    container_name: pihole
-    image: pihole/pihole:latest
-    restart: unless-stopped
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "9380:80/tcp"
-    env_file:
-      - ./pihole/pihole.env
-    volumes:
-      # - "./pihole/pihole-FTL.conf:/etc/pihole/pihole-FTL.conf"
-      - "/disk/etc/pihole/:/etc/pihole/"
-      - "/disk/etc/dnsmasq.d/:/etc/dnsmasq.d/"
-    cap_add:
-      - NET_ADMIN
-      - CAP_NET_BIND_SERVICE
-      - CAP_SYS_NICE
-      - CAP_IPC_LOCK
-      - CAP_CHOWN
-
   mosquitto:
     container_name: mosquitto
     image: eclipse-mosquitto:2
@@ -47,18 +26,3 @@ services:
       -  ./mosquitto.conf:/mosquitto/config/mosquitto.conf
       - "/disk/mosquitto/data/:/mosquitto/data"
       - "/disk/mosquitto/log/:/mosquitto/log"
-
-  # Torrent Search Engine
-  jackett:
-    image: linuxserver/jackett
-    container_name: jackett
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
-    volumes:
-      - /disk/jackett/config:/config
-      - /disk/jackett/data:/downloads
-    ports:
-      - 9117:9117
-    restart: unless-stopped
