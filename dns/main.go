@@ -1,7 +1,7 @@
-//usr/bin/go run $0 $@ ; exit
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,38 +10,35 @@ import (
 	"os"
 	"time"
 
-	"github.com/namedotcom/go/namecom"
+	"github.com/cloudflare/cloudflare-go"
 )
 
+const domain = "homelab.vhanda.in"
+
 func main() {
-	username := os.Getenv("NAMECOM_USERNAME")
-	apiToken := os.Getenv("NAMECOM_API_TOKEN")
-	domainName := os.Getenv("NAMECOM_DOMAIN_NAME")
-	host := os.Getenv("NAMECOM_DOMAIN_HOST")
 
-	if len(username) == 0 || len(apiToken) == 0 || len(domainName) == 0 || len(host) == 0 {
-		fmt.Println("NAMECOM environment variables missing")
-		os.Exit(1)
-	}
-
-	nc := namecom.New(username, apiToken)
-
-	listRecordsRequest := namecom.ListRecordsRequest{
-		DomainName: domainName,
-		PerPage:    100,
-		Page:       1,
-	}
-	response, err := nc.ListRecords(&listRecordsRequest)
+	api, err := cloudflare.NewWithAPIToken(os.Getenv("CLOUDFLARE_API_TOKEN"))
 	if err != nil {
 		log.Fatal(err)
 	}
+	ctx := context.Background()
 
-	var ourRecord namecom.Record
-	for _, record := range response.Records {
-		if record.Type == "A" && record.Host == host {
-			ourRecord = *record
-			break
-		}
+	zoneID, err := api.ZoneIDByName("vhanda.in")
+	if err != nil {
+		log.Fatal(err)
+	}
+	zoneC := cloudflare.ZoneIdentifier(zoneID)
+
+	records, _, err := api.ListDNSRecords(ctx, zoneC, cloudflare.ListDNSRecordsParams{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	dnsRecord := dnsRecordForName(records, domain)
+	if dnsRecord == nil {
+		fmt.Println("DNS record not found")
+		os.Exit(1)
 	}
 
 	ip, err := getIP()
@@ -50,13 +47,18 @@ func main() {
 	}
 	fmt.Println("IP", ip)
 
-	if ourRecord.Answer == ip {
+	if dnsRecord.Content == ip {
 		fmt.Println("No update required")
 		os.Exit(0)
 	}
 
-	ourRecord.Answer = ip
-	_, err = nc.UpdateRecord(&ourRecord)
+	err = api.UpdateDNSRecord(ctx, zoneC, cloudflare.UpdateDNSRecordParams{
+		ID:      dnsRecord.ID,
+		Type:    dnsRecord.Type,
+		Name:    dnsRecord.Name,
+		Content: ip,
+		TTL:     dnsRecord.TTL,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,4 +96,13 @@ func getIP() (string, error) {
 	}
 
 	return ip.IP, nil
+}
+
+func dnsRecordForName(records []cloudflare.DNSRecord, name string) *cloudflare.DNSRecord {
+	for _, r := range records {
+		if r.Name == name {
+			return &r
+		}
+	}
+	return nil
 }
