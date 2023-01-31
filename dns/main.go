@@ -8,22 +8,31 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/cloudflare/cloudflare-go"
 )
 
-const domain = "homelab.vhanda.in"
-
 func main() {
+	apiToken := os.Getenv("CLOUDFLARE_API_TOKEN")
+	if apiToken == "" {
+		log.Fatal("CLOUDFLARE_API_TOKEN not set")
+	}
 
-	api, err := cloudflare.NewWithAPIToken(os.Getenv("CLOUDFLARE_API_TOKEN"))
+	domainName := os.Getenv("HOMELAB_DOMAIN_NAME")
+	if domainName == "" {
+		log.Fatal("HOMELAB_DOMAIN_NAME not set")
+	}
+
+	api, err := cloudflare.NewWithAPIToken(apiToken)
 	if err != nil {
 		log.Fatal(err)
 	}
 	ctx := context.Background()
 
-	zoneID, err := api.ZoneIDByName("vhanda.in")
+	zoneName := strings.Join(strings.Split(domainName, ".")[1:], ".")
+	zoneID, err := api.ZoneIDByName(zoneName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,7 +44,7 @@ func main() {
 		return
 	}
 
-	dnsRecord := dnsRecordForName(records, domain)
+	dnsRecord := dnsRecordForName(records, domainName)
 	if dnsRecord == nil {
 		fmt.Println("DNS record not found")
 		os.Exit(1)
