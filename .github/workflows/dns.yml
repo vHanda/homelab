@@ -1,6 +1,9 @@
 name: DNS
 
-on: push
+on:
+  push:
+    paths:
+    - 'dns/**'
 
 jobs:
   docker:
