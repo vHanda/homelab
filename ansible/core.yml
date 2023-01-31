@@ -1,0 +1,25 @@
+- name: Setup my coreutils
+  hosts: pi
+  become: false
+  tasks:
+    - name: Install packages
+      community.general.pacman:
+        state: present
+        name:
+          - jq
+          - curl
+          - git
+          - docker
+          - docker-compose
+          - fish
+          - fd
+          - the_silver_searcher
+          - fzf
+          - bat
+          - podman
+          - podman-compose
+
+    - name: Set login shell to fish
+      ansible.builtin.command: usermod --shell /usr/bin/fish {{ ansible_env.USER }}
+      become: true
+      changed_when: false

@@ -1,0 +1,36 @@
+- name: Install Docker
+  hosts: pi
+  become: false
+  tasks:
+    - name: Install packages
+      community.general.pacman:
+        state: present
+        name:
+          - docker
+          - docker-compose
+          - podman
+          - podman-compose
+
+    - name: Set the docker logging to journald
+      ansible.builtin.lineinfile:
+        path: /etc/docker/daemon.json
+        line: '{"log-driver": "journald"}'
+        create: true
+        state: present
+        owner: root
+        group: root
+        mode: 0644
+      become: true
+
+    - name: Enable and start docker
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+      become: true
+
+    - name: Restart docker
+      ansible.builtin.systemd:
+        name: docker
+        state: restarted
+      become: true
