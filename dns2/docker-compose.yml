@@ -1,0 +1,14 @@
+version: "2.1"
+services:
+  blocky:
+    image: spx01/blocky
+    container_name: blocky
+    restart: unless-stopped
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    environment:
+      - TZ=Europe/Berlin # Optional to synchronize the log timestamp with host
+    volumes:
+      - ./config.yml:/app/config.yml
+      - ./blacklist.txt:/blacklist.txt

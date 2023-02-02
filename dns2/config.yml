@@ -1,0 +1,13 @@
+upstream:
+  default:
+    - 1.1.1.1
+    - 1.0.0.1
+blocking:
+  blackLists:
+    vish:
+    - /blacklist.txt
+  clientGroupsBlock:
+    default:
+      - vish
+port: 53
+httpPort: 4000
