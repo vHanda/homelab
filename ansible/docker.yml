@@ -25,12 +25,6 @@
     - name: Enable and start docker
       ansible.builtin.systemd:
         name: docker
-        state: started
-        enabled: true
-      become: true
-
-    - name: Restart docker
-      ansible.builtin.systemd:
-        name: docker
         state: restarted
+        enabled: true
       become: true
