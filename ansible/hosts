@@ -1,2 +1,9 @@
 [pi]
 pi.local
+
+[ovh]
+193.70.80.213
+
+[ovh:vars]
+ansible_connection=ssh
+ansible_user=vishesh

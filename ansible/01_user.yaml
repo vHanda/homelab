@@ -1,11 +1,16 @@
 - name: Create 'vishesh' user
-  hosts: pi
+  hosts: all
   become: false
   tasks:
+    - name: Ensure group "vishesh" exists
+      ansible.builtin.group:
+        name: vishesh
+        state: present
+
     - name: Create a new user
       ansible.builtin.user:
         name: vishesh
-        uid: 1000
+        uid: 1500
         group: vishesh
 
     - name: Make sure we have a 'wheel' group
@@ -13,12 +18,12 @@
         name: wheel
         state: present
 
-    - name: Allow 'wheel' group to have passwordless sudo
+    - name: Allow 'wheel' group to have sudo
       ansible.builtin.lineinfile:
         dest: /etc/sudoers
         state: present
         regexp: "^%wheel"
-        line: "%wheel ALL=(ALL) NOPASSWD: ALL"
+        line: "%wheel ALL=(ALL:ALL) ALL"
         validate: "visudo -cf %s"
 
     - name: Add user to the wheel group

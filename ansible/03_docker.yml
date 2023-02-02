@@ -1,6 +1,9 @@
 - name: Install Docker
-  hosts: pi
+  hosts: all
   become: false
+  vars_prompt:
+    - name: github_container_registry_token
+      prompt: Enter your Github PAT
   tasks:
     - name: Install packages
       community.general.pacman:
@@ -27,4 +30,11 @@
         name: docker
         state: restarted
         enabled: true
+      become: true
+
+    - name: Log into ghcr.io
+      community.docker.docker_login:
+        registry_url: ghcr.io
+        username: vhanda
+        password: "{{ github_container_registry_token }}"
       become: true
