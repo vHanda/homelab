@@ -31,3 +31,14 @@
         name: vishesh
         groups: wheel
         append: true
+
+    - name: Install packages
+      community.general.pacman:
+        state: present
+        name:
+          - fish
+
+    - name: Set login shell to fish
+      ansible.builtin.command: usermod --shell /usr/bin/fish vishesh
+      become: true
+      changed_when: false

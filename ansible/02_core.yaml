@@ -12,7 +12,6 @@
           - git
           - docker
           - docker-compose
-          - fish
           - fd
           - the_silver_searcher
           - fzf
@@ -22,8 +21,3 @@
           - git-crypt
           - chezmoi
           - htop
-
-    - name: Set login shell to fish
-      ansible.builtin.command: usermod --shell /usr/bin/fish {{ ansible_env.USER }}
-      become: true
-      changed_when: false
