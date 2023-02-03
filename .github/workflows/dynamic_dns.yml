@@ -1,9 +1,9 @@
-name: DNS
+name: Dynamic DNS
 
 on:
   push:
     paths:
-    - 'dns/**'
+    - 'dynamic_dns/**'
 
 jobs:
   docker:
@@ -25,9 +25,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: "{{defaultContext}}:dns"
+          context: "{{defaultContext}}:dynamic_dns"
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
-            ghcr.io/vhanda/homelab/dns:${{ github.sha }}
-            ghcr.io/vhanda/homelab/dns:latest
+            ghcr.io/vhanda/homelab/dynamic_dns:${{ github.sha }}
+            ghcr.io/vhanda/homelab/dynamic_dns:latest

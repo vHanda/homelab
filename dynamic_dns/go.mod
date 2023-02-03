@@ -1,4 +1,4 @@
-module github.com/vhanda/homelab/dns
+module github.com/vhanda/homelab/dynamic_dns
 
 go 1.18
 
