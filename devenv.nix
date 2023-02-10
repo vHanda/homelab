@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  packages = [ pkgs.git ];
+  packages = [ pkgs.git pkgs.mosquitto pkgs.timescaledb ];
 
   enterShell = ''
     echo "Welcome to your homelab"
