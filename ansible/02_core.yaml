@@ -21,3 +21,10 @@
           - git-crypt
           - chezmoi
           - htop
+          - fish
+          - fisher
+
+    - name: Install fisher plugins
+      ansible.builtin.command: fisher update
+      become: true
+      changed_when: false
